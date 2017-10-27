@@ -1,3 +1,3 @@
 
-# FCN-for-Semantic-Segmentation
+# Semantic-Segmentation
 A re-implementation of image segmentation with Keras.
