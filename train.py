@@ -19,7 +19,7 @@ weights_path = '/home/v-yurzho/conversion/converted/dilation8_pascal_voc.npy'
 batch_size = 1
 learning_rate = 1e-4
 
-modeltype = "deconv"
+modeltype = "dilated"
 
 def load_weights(model, weights_path):
 	print("load weights")

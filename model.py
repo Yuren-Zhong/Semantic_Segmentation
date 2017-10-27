@@ -67,13 +67,6 @@ def deconv_frontend(input_width, input_height) -> Sequential:
 	model.add(Conv2D(512, (3,3), activation='relu'))
 	model.add(MaxPooling2D((2,2)))
 
-	# fully conv
-	model.add(Conv2D(4096, (7,7), activation='relu'))
-	model.add(Dropout(0.5, seed=int(time.time())))
-	model.add(Conv2D(4096, (1,1), activation='relu'))
-	model.add(Dropout(0.5, seed=int(time.time()) + int(time.time())))
-	model.add(Conv2D(21, (1,1)))
-	model.add(Conv2DTranspose(21, (64,64), strides=32))
 
 
 
