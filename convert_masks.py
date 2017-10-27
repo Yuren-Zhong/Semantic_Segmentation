@@ -1,5 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
 
 '''
 Converts the .mat segmentation labels in the Augmented Pascal VOC
