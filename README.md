@@ -1,3 +1,3 @@
 
 # Semantic-Segmentation
-A re-implementation of image segmentation with Keras.
+A re-implementation for image semantic segmentation with Keras.
