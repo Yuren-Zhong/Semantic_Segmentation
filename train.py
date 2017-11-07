@@ -15,21 +15,35 @@ train_list_fname = '/home/v-yurzho/benchmark_RELEASE/dataset/train.txt'
 val_list_fname = '/home/v-yurzho/benchmark_RELEASE/dataset/val.txt'
 img_root = '/home/v-yurzho/benchmark_RELEASE/dataset/img'
 mask_root = '/home/v-yurzho/benchmark_RELEASE/dataset/pngs'
-weights_path = '/home/v-yurzho/conversion/converted/dilation8_pascal_voc.npy'
-batch_size = 1
-learning_rate = 1e-4
+weights_path = '/home/v-yurzho/FCN-for-Semantic-Segmentation/trained_log/2017-10-27 17:29-lr1e-04-bs001/ep42-vl1.0240.hdf5'
+batch_size = 4
+learning_rate = 2e-7
 
-modeltype = "dilated"
+modeltype = "deconv"
 
 def load_weights(model, weights_path):
-	print("load weights")
-	weights_data = np.load(weights_path, encoding='latin1').item()
+	print("*********** load weights ***********")
 
-	for layer in model.layers:
-		if layer.name in weights_data.keys():
-			layer_weights = weights_data[layer.name]
-			layer.set_weights((layer_weights['weights'],
-				layer_weights['biases']))
+	def load_tf_weights():
+		""" Load pretrained weights converted from Caffe to TF. """
+		# 'latin1' enables loading .npy files created with python2
+		weights_data = np.load(weights_path, encoding='latin1').item()
+
+		for layer in model.layers:
+			if layer.name in weights_data.keys():
+				layer_weights = weights_data[layer.name]
+				layer.set_weights((layer_weights['weights'], layer_weights['biases']))
+
+	def load_keras_weights():
+		""" Load a Keras checkpoint. """
+		model.load_weights(weights_path)
+
+	if weights_path.endswith('.npy'):
+		load_tf_weights()
+	elif weights_path.endswith('.hdf5'):
+		load_keras_weights()
+	else:
+		raise Exception("Unknown weights format.")
 
 def build_abs_paths(basenames):
 	global img_root
@@ -80,13 +94,8 @@ def train():
 			patience=5,
 			verbose=1,
 			min_lr=0.05 * learning_rate)
-	if modeltype == 'dilated':
-		model = add_softmax(dilated_frontend(500, 500))
-	elif modeltype == 'deconv':
-		model = add_softmax(deconv_frontend(500, 500))
-	else:
-		print("Can't find model named " + modeltype)
-		exit(1)
+
+	model = add_softmax(dilated_frontend(500, 500))
 
 	#load_weights(model, weights_path)
 
@@ -115,7 +124,7 @@ def train():
 					img_target_size=(500,500),
 					mask_target_size=(16, 16)),
 			steps_per_epoch=(len(train_basenames)/batch_size),
-			epochs=20,
+			epochs=50,
 			validation_data=val_data_gen.flow_from_list(
 					val_img_fnames,
 					val_mask_fnames,
@@ -130,7 +139,6 @@ def train():
 					model_reducelr,
 					model_skipped
 			])
-
 
 if __name__ == '__main__':
 	train()
